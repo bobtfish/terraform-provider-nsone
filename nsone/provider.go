@@ -1,9 +1,9 @@
 package nsone
 
 import (
-	"github.com/bobtfish/go-nsone-api"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
+	nsone "github.com/ns1/ns1-go"
 )
 
 func Provider() terraform.ResourceProvider {
