@@ -1,6 +1,7 @@
 package nsone
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
@@ -59,6 +60,12 @@ func zoneResource() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"networks": &schema.Schema{
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: false,
+				Default:  "0",
+			},
 			"primary": &schema.Schema{
 				Type:     schema.TypeString,
 				Optional: true,
@@ -81,6 +88,7 @@ func zoneToResourceData(d *schema.ResourceData, z *nsone.Zone) {
 	d.Set("retry", z.Retry)
 	d.Set("expiry", z.Expiry)
 	d.Set("dns_servers", strings.Join(z.Dns_servers[:], ","))
+	d.Set("networks", strings.Join(int2StringSlice(z.Networks)[:], ","))
 	if z.Secondary != nil && z.Secondary.Enabled {
 		d.Set("primary", z.Secondary.Primary_ip)
 	}
@@ -114,6 +122,11 @@ func resourceToZoneData(z *nsone.Zone, d *schema.ResourceData) {
 	}
 	if v, ok := d.GetOk("link"); ok {
 		z.LinkTo(v.(string))
+	}
+	if v, ok := d.GetOk("networks"); ok {
+		networkSlice := strings.Split(v.(string), ",")
+		networkSliceInt := string2IntSlice(networkSlice)
+		z.Networks = networkSliceInt
 	}
 }
 
@@ -154,4 +167,23 @@ func ZoneUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 	zoneToResourceData(d, z)
 	return nil
+}
+
+func int2StringSlice(intSl []int) []string {
+	var newStringSlice []string
+
+	for _, v := range intSl {
+		newStringSlice = append(newStringSlice, strconv.Itoa(v))
+	}
+	return newStringSlice
+}
+
+func string2IntSlice(stringSl []string) []int {
+	var newIntSlice []int
+
+	for _, v := range stringSl {
+		intV, _ := strconv.Atoi(v)
+		newIntSlice = append(newIntSlice, intV)
+	}
+	return newIntSlice
 }
