@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bobtfish/go-nsone-api"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	nsone "github.com/ns1/ns1-go"
 )
 
 func TestAccDataFeed_basic(t *testing.T) {

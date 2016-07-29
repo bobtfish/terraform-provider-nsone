@@ -17,5 +17,7 @@ RUN mkdir /go
 RUN gem install fpm
 ENV RUBYOPT="-KU -E utf-8:utf-8"
 RUN gem install fpm
-
+RUN git clone https://github.com/yelp/terraform.git /go/src/github.com/hashicorp/terraform && \
+    cd /go/src/github.com/hashicorp/terraform && \
+        git checkout d7dc7c08eddf3b821650b284bdd1f77a02cb51c2
 #WORKDIR /go/src/github.com/Yelp/terraform-provider-gitfile
