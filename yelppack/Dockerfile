@@ -1,4 +1,5 @@
 FROM docker-dev.yelpcorp.com/trusty_yelp
+
 MAINTAINER Tomas Doran <bobtfish@bobtfish.net>
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yq \
@@ -17,7 +18,6 @@ RUN mkdir /go
 RUN gem install fpm
 ENV RUBYOPT="-KU -E utf-8:utf-8"
 RUN gem install fpm
-RUN git clone https://github.com/yelp/terraform.git /go/src/github.com/hashicorp/terraform && \
+RUN git clone https://github.com/hashicorp/terraform.git /go/src/github.com/hashicorp/terraform && \
     cd /go/src/github.com/hashicorp/terraform && \
-        git checkout d7dc7c08eddf3b821650b284bdd1f77a02cb51c2
-#WORKDIR /go/src/github.com/Yelp/terraform-provider-gitfile
+        git checkout e822a79165dbc06bbf8271ee349fe256867d53dc
