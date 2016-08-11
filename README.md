@@ -2,7 +2,7 @@
 
 This is an *experimental* provider which allows Terraform to create
 and update DNS zones, records, monitoring jobs, data sources and
-feeds, and other resources with the (NSONE)[http://nsone.net/] API.
+feeds, and other resources with the [NSONE](http://nsone.net/) API.
 
 # Example use
 
