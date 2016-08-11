@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	nsone "github.com/ns1/ns1-go"
+	nsone "gopkg.in/ns1/ns1-go.v1"
 )
 
 func TestAccMonitoringJob_basic(t *testing.T) {

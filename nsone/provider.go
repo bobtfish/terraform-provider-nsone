@@ -3,7 +3,7 @@ package nsone
 import (
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/hashicorp/terraform/terraform"
-	nsone "github.com/ns1/ns1-go"
+	nsone "gopkg.in/ns1/ns1-go.v1"
 )
 
 func Provider() terraform.ResourceProvider {
