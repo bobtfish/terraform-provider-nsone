@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
-	nsone "github.com/ns1/ns1-go"
+	nsone "gopkg.in/ns1/ns1-go.v1"
 	"log"
 	"regexp"
 	"sort"
