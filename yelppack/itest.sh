@@ -3,4 +3,5 @@
 set -eu
 
 dpkg -i "$1"
-test -x /usr/bin/terraform-provider-nsone
+
+test -x /nail/opt/terraform-$2/bin/terraform-provider-nsone
