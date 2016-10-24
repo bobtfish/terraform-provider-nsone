@@ -3,13 +3,12 @@
 project=$1
 version=$2
 iteration=$3
+tf_version=$4
 
 go get github.com/bobtfish/${project}
 mkdir /dist && cd /dist
 mkdir /tmp/usrbin
-ln -s /nail/opt/bin/${project} /tmp/usrbin/${project}
-fpm -s dir -t deb --deb-no-default-config-files --name ${project} \
+fpm -s dir -t deb --deb-no-default-config-files --name ${project}-${tf_version} \
     --iteration ${iteration} --version ${version} \
-    /tmp/usrbin/${project}=/usr/bin/ \
-    /go/bin/${project}=/nail/opt/bin/
+    /go/bin/${project}=/nail/opt/terraform-${tf_version}/bin/
 

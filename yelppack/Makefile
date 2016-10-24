@@ -9,10 +9,11 @@ else
 	REAL_BUILD_NUMBER?=$(BUILD_NUMBER)
 endif
 VERSION = 0.5
+TF_VERSION = 0.7
 ITERATION = yelp$(REAL_BUILD_NUMBER)
 ARCH := $(shell dpkg --print-architecture)
 
-PACKAGE_NAME := $(PROJECT)_$(VERSION)-$(ITERATION)_$(ARCH).deb
+PACKAGE_NAME := $(PROJECT)-$(TF_VERSION)_$(VERSION)-$(ITERATION)_$(ARCH).deb
 PACKAGE_FILE := dist/$(PACKAGE_NAME)
 
 DOCKER_TAG = $(PROJECT)_$(shell date +%s)
@@ -20,7 +21,7 @@ DOCKER_TAG = $(PROJECT)_$(shell date +%s)
 CLEAN_CONTAINER := [ -e .docker_container_id ] && docker rm --force $$(cat .docker_container_id) || true; rm -f .docker_container_id
 
 itest_%: $(PACKAGE_FILE)
-	docker run --rm -v $(CURDIR)/../dist:/dist:ro -v $(CURDIR)/itest.sh:/itest.sh:ro docker-dev.yelpcorp.com/$*_yelp:latest bash /itest.sh /$(PACKAGE_FILE)
+	docker run --rm -v $(CURDIR)/../dist:/dist:ro -v $(CURDIR)/itest.sh:/itest.sh:ro docker-dev.yelpcorp.com/$*_yelp:latest bash /itest.sh /$(PACKAGE_FILE) $(TF_VERSION)
 
 $(PACKAGE_FILE): .docker_container_id
 	docker cp $$(cat .docker_container_id):/$(PACKAGE_FILE) ../dist/
@@ -31,7 +32,7 @@ $(PACKAGE_FILE): .docker_container_id
 		-v $(CURDIR)/build.sh:/build.sh:ro \
 		--cidfile=$(CURDIR)/.docker_container_id \
 		$$(cat .docker_image_id) \
-		bash /build.sh $(PROJECT) $(VERSION) $(ITERATION) || \
+		bash /build.sh $(PROJECT) $(VERSION) $(ITERATION) $(TF_VERSION) || \
 	(retval=$$?; $(CLEAN_CONTAINER); exit $$retval; )
 
 .docker_image_id: Dockerfile
