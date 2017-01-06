@@ -11,7 +11,7 @@ endif
 VERSION = 0.5
 TF_VERSION = 0.8
 ITERATION = yelp$(REAL_BUILD_NUMBER)
-ARCH := $(shell dpkg --print-architecture)
+ARCH := $(shell uname -m)
 
 PACKAGE_NAME := $(PROJECT)-$(TF_VERSION)_$(VERSION)-$(ITERATION)_$(ARCH).deb
 PACKAGE_FILE := dist/$(PACKAGE_NAME)
@@ -24,7 +24,7 @@ itest_%: $(PACKAGE_FILE)
 	docker run --rm -v $(CURDIR)/../dist:/dist:ro -v $(CURDIR)/itest.sh:/itest.sh:ro docker-dev.yelpcorp.com/$*_yelp:latest bash /itest.sh /$(PACKAGE_FILE) $(TF_VERSION)
 
 $(PACKAGE_FILE): .docker_container_id
-	docker cp $$(cat .docker_container_id):/$(PACKAGE_FILE) ../dist/
+	docker cp $$(cat .docker_container_id):/dist ..
 
 .docker_container_id: .docker_image_id
 	docker run --rm=false \
@@ -32,7 +32,7 @@ $(PACKAGE_FILE): .docker_container_id
 		-v $(CURDIR)/build.sh:/build.sh:ro \
 		--cidfile=$(CURDIR)/.docker_container_id \
 		$$(cat .docker_image_id) \
-		bash /build.sh $(PROJECT) $(VERSION) $(ITERATION) $(TF_VERSION) || \
+		bash -xve /build.sh $(PROJECT) $(VERSION) $(ITERATION) $(TF_VERSION) || \
 	(retval=$$?; $(CLEAN_CONTAINER); exit $$retval; )
 
 .docker_image_id: Dockerfile
