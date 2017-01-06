@@ -1,4 +1,4 @@
-FROM docker-dev.yelpcorp.com/trusty_yelp
+FROM ubuntu:trusty
 
 MAINTAINER Tomas Doran <bobtfish@bobtfish.net>
 
@@ -9,6 +9,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yq \
     ruby1.9.1 rubygems1.9.1 \
     libopenssl-ruby1.9.1 \
     ruby1.9.1-dev \
+    rpm \
     --no-install-recommends
 RUN wget https://storage.googleapis.com/golang/go1.7.linux-amd64.tar.gz && tar xzf go1.7.linux-amd64.tar.gz && mv go /usr/local
 ENV PATH /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin:/usr/local/go/bin:/go/bin
