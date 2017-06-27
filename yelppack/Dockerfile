@@ -15,6 +15,6 @@ ENV PATH /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin:/usr/local
 ENV GOPATH /go
 RUN mkdir /go
 ENV RUBYOPT="-KU -E utf-8:utf-8"
-RUN git clone https://github.com/yelp/terraform.git /go/src/github.com/hashicorp/terraform && \
+RUN git clone https://github.com/hashicorp/terraform.git /go/src/github.com/hashicorp/terraform && \
     cd /go/src/github.com/hashicorp/terraform && \
         git checkout v0.9.8
