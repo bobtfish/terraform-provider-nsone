@@ -17,4 +17,4 @@ RUN mkdir /go
 ENV RUBYOPT="-KU -E utf-8:utf-8"
 RUN git clone https://github.com/hashicorp/terraform.git /go/src/github.com/hashicorp/terraform && \
     cd /go/src/github.com/hashicorp/terraform && \
-        git checkout v0.10.7
+        git checkout v0.9.8

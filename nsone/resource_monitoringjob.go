@@ -3,7 +3,7 @@ package nsone
 import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/schema"
-	nsone "gopkg.in/ns1/ns1-go.v1"
+	nsone "gopkg.in/sarguru/ns1-go.v12"
 	"regexp"
 	"strconv"
 )
