@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/hashcode"
 	"github.com/hashicorp/terraform/helper/schema"
-	nsone "gopkg.in/sarguru/ns1-go.v12"
+	nsone "gopkg.in/sarguru/ns1-go.v15"
 	"log"
 	"regexp"
 	"sort"
@@ -129,6 +129,14 @@ func recordResource() *schema.Resource {
 							Type:     schema.TypeString,
 							Optional: true,
 						},
+						"longitude": &schema.Schema{
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
+						"latitude": &schema.Schema{
+							Type:     schema.TypeFloat,
+							Optional: true,
+						},
 						"up": &schema.Schema{
 							Type:     schema.TypeBool,
 							Optional: true,
@@ -172,6 +180,8 @@ func regionsToHash(v interface{}) int {
 	buf.WriteString(fmt.Sprintf("%s-", r["georegion"].(string)))
 	buf.WriteString(fmt.Sprintf("%s-", r["country"].(string)))
 	buf.WriteString(fmt.Sprintf("%s-", r["us_state"].(string)))
+	buf.WriteString(fmt.Sprintf("%f-", r["latitude"].(float64)))
+	buf.WriteString(fmt.Sprintf("%f-", r["longitude"].(float64)))
 	buf.WriteString(fmt.Sprintf("%t-", r["up"].(bool)))
 	return hashcode.String(buf.String())
 }
@@ -272,6 +282,12 @@ func recordToResourceData(d *schema.ResourceData, r *nsone.Record) error {
 			}
 			if len(region.Meta.USState) > 0 {
 				new_region["us_state"] = region.Meta.USState[0]
+			}
+			if region.Meta.Latitude > 0 {
+				new_region["latitude"] = strconv.FormatFloat(region.Meta.Latitude, 'f', 1, 64)
+			}
+			if region.Meta.Longitude > 0 {
+				new_region["longitude"] = strconv.FormatFloat(region.Meta.Longitude, 'f', 1, 64)
 			}
 			if region.Meta.Up {
 				new_region["up"] = region.Meta.Up
@@ -403,10 +419,14 @@ func resourceDataToRecord(r *nsone.Record, d *schema.ResourceData) error {
 			}
 			if raw_config, ok := fi["config"]; ok {
 				for k, v := range raw_config.(map[string]interface{}) {
-					if i, err := strconv.Atoi(v.(string)); err == nil {
-						filter.Config[k] = i
+					if v.(string) == "true" || v.(string) == "false" {
+						filter.Config[k], _ = strconv.ParseBool(v.(string))
 					} else {
-						filter.Config[k] = v
+						if i, err := strconv.Atoi(v.(string)); err == nil {
+							filter.Config[k] = i
+						} else {
+							filter.Config[k] = v
+						}
 					}
 				}
 			}
@@ -429,6 +449,12 @@ func resourceDataToRecord(r *nsone.Record, d *schema.ResourceData) error {
 			}
 			if g := region["us_state"].(string); g != "" {
 				nsone_r.Meta.USState = []string{g}
+			}
+			if g := region["latitude"].(float64); g != 0 {
+				nsone_r.Meta.Latitude = g
+			}
+			if g := region["longitude"].(float64); g != 0 {
+				nsone_r.Meta.Longitude = g
 			}
 			if g := region["up"].(bool); g {
 				nsone_r.Meta.Up = g
