@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	nsone "gopkg.in/sarguru/ns1-go.v12"
+	nsone "gopkg.in/sarguru/ns1-go.v15"
 )
 
 func zoneResource() *schema.Resource {
