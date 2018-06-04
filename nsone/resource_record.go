@@ -17,10 +17,6 @@ import (
 func recordResource() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"id": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"zone": &schema.Schema{
 				Type:     schema.TypeString,
 				Required: true,
