@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	nsone "gopkg.in/sarguru/ns1-go.v15"
+	nsone "gopkg.in/sarguru/ns1-go.v18"
 )
 
 func TestAccRecord_basic(t *testing.T) {
