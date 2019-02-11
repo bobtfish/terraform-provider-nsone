@@ -148,7 +148,7 @@ func testAccCheckRecordAttributes(record *nsone.Record) resource.TestCheckFunc {
 		recordAnswerString := recordAnswer.Answer[0]
 
 		if recordAnswerString != "test1.terraform.io" {
-			return fmt.Errorf("Bad value : %s", record.Ttl)
+			return fmt.Errorf("Bad value : %d", record.Ttl)
 		}
 
 		if recordAnswer.Region != "cal" {
@@ -169,7 +169,7 @@ func testAccCheckRecordAttributesUpdated(record *nsone.Record) resource.TestChec
 	return func(s *terraform.State) error {
 
 		if record.Ttl != 120 {
-			return fmt.Errorf("Bad value : %s", record.Ttl)
+			return fmt.Errorf("Bad value : %d", record.Ttl)
 		}
 
 		recordAnswer := record.Answers[1]

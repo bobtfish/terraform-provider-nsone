@@ -133,7 +133,7 @@ func testAccCheckMonitoringJobAttributes(mj *nsone.MonitoringJob) resource.TestC
 		}
 
 		if mj.RapidRecheck != true {
-			return fmt.Errorf("Bad value : %s", mj.RapidRecheck)
+			return fmt.Errorf("Bad value : %t", mj.RapidRecheck)
 		}
 
 		if mj.Policy != "all" {
@@ -155,7 +155,7 @@ func testAccCheckMonitoringJobAttributesUpdated(mj *nsone.MonitoringJob) resourc
 		}
 
 		if mj.RapidRecheck != false {
-			return fmt.Errorf("Bad value : %s", mj.RapidRecheck)
+			return fmt.Errorf("Bad value : %t", mj.RapidRecheck)
 		}
 
 		if mj.Policy != "quorum" {
