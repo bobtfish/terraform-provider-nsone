@@ -72,6 +72,9 @@ func zoneResource() *schema.Resource {
 		Read:   ZoneRead,
 		Update: ZoneUpdate,
 		Delete: ZoneDelete,
+		Importer: &schema.ResourceImporter{
+			State: ZoneImport,
+		},
 	}
 }
 
@@ -163,6 +166,12 @@ func ZoneUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 	zoneToResourceData(d, z)
 	return nil
+}
+
+// ZoneImport - import zone resource from existing NS1 configuration
+func ZoneImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	d.Set("zone", d.Id())
+	return []*schema.ResourceData{d}, nil
 }
 
 func int2StringSlice(intSl []int) []string {

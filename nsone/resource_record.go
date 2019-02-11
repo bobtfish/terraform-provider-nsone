@@ -4,14 +4,15 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/hashicorp/terraform/helper/hashcode"
-	"github.com/hashicorp/terraform/helper/schema"
-	nsone "gopkg.in/sarguru/ns1-go.v18"
 	"log"
 	"regexp"
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/hashicorp/terraform/helper/hashcode"
+	"github.com/hashicorp/terraform/helper/schema"
+	nsone "gopkg.in/sarguru/ns1-go.v18"
 )
 
 func recordResource() *schema.Resource {
@@ -166,6 +167,9 @@ func recordResource() *schema.Resource {
 		Read:   RecordRead,
 		Update: RecordUpdate,
 		Delete: RecordDelete,
+		Importer: &schema.ResourceImporter{
+			State: RecordImport,
+		},
 	}
 }
 
@@ -186,13 +190,14 @@ func answersToHash(v interface{}) int {
 	var buf bytes.Buffer
 	a := v.(map[string]interface{})
 	buf.WriteString(fmt.Sprintf("%s-", a["answer"].(string)))
-	if a["region"] != nil {
+	if a["region"] != nil && a["region"].(string) != "" {
 		buf.WriteString(fmt.Sprintf("%s-", a["region"].(string)))
 	}
 	metas := make([]int, 0)
 	switch t := a["meta"].(type) {
 	default:
 		panic(fmt.Sprintf("unexpected type %T", t))
+	case nil:
 	case *schema.Set:
 		for _, meta := range t.List() {
 			metas = append(metas, metaToHash(meta))
@@ -207,7 +212,7 @@ func answersToHash(v interface{}) int {
 		buf.WriteString(fmt.Sprintf("%d-", metahash))
 	}
 	hash := hashcode.String(buf.String())
-	log.Println("Generated answersToHash %d from %+v", hash, a)
+	log.Printf("Generated answersToHash %d from %+v", hash, a)
 	return hash
 }
 
@@ -223,7 +228,7 @@ func metaToHash(v interface{}) int {
 	}
 
 	hash := hashcode.String(buf.String())
-	log.Println("Generated metaToHash %d from %+v", hash, s)
+	log.Printf("Generated metaToHash %d from %+v", hash, s)
 	return hash
 }
 
@@ -233,8 +238,16 @@ func recordToResourceData(d *schema.ResourceData, r *nsone.Record) error {
 	d.Set("zone", r.Zone)
 	d.Set("type", r.Type)
 	d.Set("ttl", r.Ttl)
+	d.Set("use_client_subnet", r.UseClientSubnet)
 	if r.Link != "" {
 		d.Set("link", r.Link)
+	}
+	if len(r.Meta) > 0 {
+		meta := make(map[string]interface{})
+		for name, value := range r.Meta {
+			meta[name] = value
+		}
+		d.Set("meta", meta)
 	}
 	if len(r.Filters) > 0 {
 		filters := make([]map[string]interface{}, len(r.Filters))
@@ -303,7 +316,6 @@ func recordToResourceData(d *schema.ResourceData, r *nsone.Record) error {
 
 func answerToMap(a nsone.Answer) map[string]interface{} {
 	m := make(map[string]interface{})
-	m["meta"] = make([]map[string]interface{}, 0)
 	m["answer"] = strings.Join(a.Answer, " ")
 	if a.Region != "" {
 		m["region"] = a.Region
@@ -513,4 +525,18 @@ func RecordUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 	recordToResourceData(d, r)
 	return nil
+}
+
+// RecordImport - import record from existing NS1 configuration. ID is specified by 'zone/domain/type'.
+func RecordImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	parts := strings.Split(d.Id(), "/")
+	if len(parts) != 3 {
+		return nil, fmt.Errorf("invalid record specifier - expecting 2 slashes ('zone/domain/type'), got %d", len(parts)-1)
+	}
+
+	d.Set("zone", parts[0])
+	d.Set("domain", parts[1])
+	d.Set("type", parts[2])
+
+	return []*schema.ResourceData{d}, nil
 }
