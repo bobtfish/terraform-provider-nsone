@@ -9,7 +9,7 @@ else
 	REAL_BUILD_NUMBER?=$(BUILD_NUMBER)
 endif
 VERSION = 0.9.1
-TF_VERSION = 0.10
+TF_VERSION = 0.11
 ITERATION = yelp$(REAL_BUILD_NUMBER)
 ARCH := $(shell dpkg --print-architecture)
 
