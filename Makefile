@@ -1,12 +1,16 @@
 .PHONY: all clean test
 
-all: terraform-provider-nsone .git/hooks/pre-commit
+PROJECT := nsone
+OUTPUT ?= bin/terraform-provider-${PROJECT}
 
-install: terraform-provider-nsone
-	cp -f terraform-provider-nsone $$(dirname $$(which terraform))
+all: terraform-provider-${PROJECT} .git/hooks/pre-commit
 
-terraform-provider-nsone: main.go nsone/*.go
-	go build .
+install: terraform-provider-${PROJECT}
+	cp -f $(GOPATH)/bin/terraform-provider-${PROJECT} $$(dirname $$(which terraform))
+
+terraform-provider-${PROJECT}: main.go nsone/*.go
+	mkdir -p $(GOPATH)/bin
+	go build -o $(OUTPUT)
 
 fmt:
 	go fmt ./...
@@ -15,15 +19,16 @@ test: .git/hooks/pre-commit
 	cd nsone ; go test -v .
 
 clean:
-	rm -f terraform-provider-nsone
+	rm -f bin/terraform-provider-nsone
 	make -C yelppack clean
 
 .git/hooks/pre-commit:
 	    if [ ! -f .git/hooks/pre-commit ]; then ln -s ../../git-hooks/pre-commit .git/hooks/pre-commit; fi
 
 itest_%:
+	cp -vp go.mod go.sum yelppack/
 	mkdir -p dist
 	make -C yelppack $@
 
-package: itest_trusty
+package: itest_bionic
 

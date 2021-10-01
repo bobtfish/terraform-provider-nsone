@@ -1,9 +1,10 @@
 #!/bin/bash -exv
 
-project=$1
-version=$2
-iteration=$3
-tf_version=$4
+project=$1; shift
+version=$1; shift
+iteration=$1; shift
+
+tf_versions="$@"
 
 mkdir /dist
 go get -v github.com/bobtfish/${project}
